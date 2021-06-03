@@ -31,7 +31,10 @@ class Box(Particles):
         The initial velocity distribution as a function taking an
         array of position with shape (N, 3) and returning an array
         of velocity with shape (N, 3).
-    kwargs : optional
+
+    Optional Parameters
+    -------------------
+    kwargs
         Keyword arguments to pass to uniform_distribution.
     """
 
@@ -85,9 +88,12 @@ def uniform_distribution(
         The boundary as a tuple (xmin, xmax, ymin, ymax, zmin, zmax).
     particle_spacing
         The spacing between the particles.
-    hfact : optional
+
+    Optional parameters
+    -------------------
+    hfact
         The smoothing length factor. Default is 1.2.
-    lattice : optional
+    lattice
         The type of lattice. Options: 'cubic' or 'close packed'. Default
         is 'close packed'.
 

@@ -201,6 +201,7 @@ class _InFile:
                 block_dict.pop('X')
                 block_dict.pop('Z')
                 block_dict.pop('relaxflag')
+                block_dict.pop('isink')
 
         if block == block_label['sinks']:
             if self.get_compile_option('GRAVITY'):

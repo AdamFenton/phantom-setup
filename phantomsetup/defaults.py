@@ -111,8 +111,8 @@ _RUN_OPTIONS = {
     # ------------------------------------------------
     # options controlling run time and input/output
     'options controlling run time and input/output': {
-        'tmax': (10.0, 'end time'),
-        'dtmax': (1.0, 'time between dumps'),
+        'tmax': (31261.0, 'end time'),
+        'dtmax': (300.0, 'time between dumps'),
         'nmax': (-1, 'maximum number of timesteps (0=just get derivs and stop)'),
         'nout': (-1, 'number of steps between dumps (-ve=ignore)'),
         'nmaxdumps': (-1, 'stop after n full dumps (-ve=ignore)'),
@@ -124,7 +124,7 @@ _RUN_OPTIONS = {
             datetime.timedelta(hours=12),
             'maximum wall time between dumps (hhh:mm, 000:00=ignore)',
         ),
-        'nfulldump': (10, 'full dump every n dumps'),
+        'nfulldump': (1, 'full dump every n dumps'),
         'iverbose': (
             0,
             'verboseness of log (-1=quiet 0=default 1=allsteps 2=debug 5=max)',
@@ -220,6 +220,7 @@ _RUN_OPTIONS = {
         'X': (0.74, 'hydrogen mass fraction'),
         'Z': (0.02, 'metallicity'),
         'relaxflag': (0, '0=evolve, 1=relaxation on (keep T const)'),
+        'isink': (0, "sink around which to centre temperature profile for ieos=6 (>0)"),
     },
     # ------------------------------------------------
     # options controlling cooling
@@ -376,7 +377,7 @@ HEADER = {
     'idust': PARTICLE_TYPE['idust'],
     'ieos': _RUN_OPTIONS['ieos'],
     'iexternalforce': _RUN_OPTIONS['iexternalforce'],
-    'isink': 0,
+    'isink': _RUN_OPTIONS['isink'],
     'majorv': PHANTOM_VERSION.split('.')[0],
     'massoftype': np.zeros(MAXTYPES),
     'microv': PHANTOM_VERSION.split('.')[1],
@@ -389,7 +390,7 @@ HEADER = {
     'nptmass': 0,
     'ntypes': 0,
     'polyk2': 0.0,
-    'qfacdisc': 0.75,
+    'qfacdisc': 0.25,
     'rhozero': 1.0,
     'time': 0.0,
     'tolh': _RUN_OPTIONS['tolh'],

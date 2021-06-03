@@ -8,6 +8,7 @@ from typing import Any, Dict
 import numpy as np
 
 from . import defaults
+from . import constants
 
 ieos_label = {
     1: 'isothermal',
@@ -39,25 +40,24 @@ class EquationOfState:
     ----------
     ieos : int
         The equation of state as represented by the following integers:
-
-        - 1: 'isothermal'
-        - 2: 'adiabatic/polytropic'
-        - 3: 'locally isothermal disc'
-        - 6: 'locally isothermal disc centered on sink particle'
-        - 7: 'z-dependent locally isothermal eos'
-        - 8: 'barotropic'
-        - 9: 'piecewise polytrope'
-        - 10: 'MESA'
-        - 11: 'isothermal with zero pressure'
-        - 14: 'locally isothermal binary disc'
+            1: 'isothermal'
+            2: 'adiabatic/polytropic'
+            3: 'locally isothermal disc'
+            6: 'locally isothermal disc centered on sink particle'
+            7: 'z-dependent locally isothermal eos'
+            8: 'barotropic'
+            9: 'piecewise polytrope'
+            10: 'MESA'
+            11: 'isothermal with zero pressure'
+            14: 'locally isothermal binary disc'
     """
 
     def __init__(self, ieos: int, **kwargs) -> None:
 
         if ieos not in ieos_label:
             raise ValueError(f'ieos={ieos} does not exist')
-        if ieos > 3:
-            raise NotImplementedError('ieos > 3 not available currently')
+        # if ieos > 3:
+        #     raise NotImplementedError('ieos > 3 not available currently')
 
         self.ieos = ieos
 
@@ -129,7 +129,11 @@ class EquationOfState:
 
         Sound speed is proportional to radius^(-q).
         """
+
         return self.parameters['qfacdisc']
+
+
+
 
     @qfacdisc.setter
     def qfacdisc(self, value: float) -> None:
@@ -137,6 +141,37 @@ class EquationOfState:
             raise ValueError(f'ieos={self.ieos} not compatible with setting qfacdisc')
         self.parameters['qfacdisc'] = value
 
+
+def polyk_for_locally_isothermal_disc_mine(
+    T0: float,
+    q_index: float,
+    reference_radius: float,
+    stellar_mass: float,
+    gravitational_constant: float,
+    aspect_ratio: float,
+) -> float:
+    """Get polyk for a locally isothermal disc.
+
+    Parameters
+    ----------
+    q_index
+        The index in the sound speed power law such that
+            H ~ (R / R_reference) ^ (3/2 - q).
+    aspect_ratio
+        The aspect ratio (H/R) at the reference radius.
+    reference_radius
+        The radius at which the aspect ratio is given.
+    stellar_mass
+        The mass of the central object the disc is orbiting.
+    gravitational_constant
+        The gravitational constant.
+    """
+    cs_ref = np.sqrt((constants.k_b*T0)/(defaults._RUN_OPTIONS['mu']*constants.m_p))
+
+    omega_ref = np.sqrt(constants.gravitational_constant * stellar_mass*constants.solarm / (reference_radius*constants.au)**3)
+    # aspect_ratio = (cs_ref/omega_ref)/(reference_radius*constants.au)
+    
+    return (aspect_ratio * np.sqrt(gravitational_constant * stellar_mass / reference_radius) * reference_radius ** q_index) **2 # Polytropic constant, polyk
 
 def polyk_for_locally_isothermal_disc(
     q_index: float,
@@ -146,12 +181,10 @@ def polyk_for_locally_isothermal_disc(
     gravitational_constant: float,
 ) -> float:
     """Get polyk for a locally isothermal disc.
-
     Parameters
     ----------
     q_index
         The index in the sound speed power law such that
-
         .. math:: H \sim (R / R_{\mathrm{reference}})^{3/2 - q}
     aspect_ratio
         The aspect ratio (H/R) at the reference radius.
@@ -167,3 +200,36 @@ def polyk_for_locally_isothermal_disc(
         * np.sqrt(gravitational_constant * stellar_mass / reference_radius)
         * reference_radius ** q_index
     ) ** 2
+
+# def get_aspect_ratio(
+#     T0: float,
+#     q_index: float,
+#     reference_radius: float,
+#     stellar_mass: float,
+#     gravitational_constant: float,
+# ) -> float:
+#
+#     cs_ref = np.sqrt((constants.k_b*T0)/(defaults._RUN_OPTIONS['mu']*constants.m_p))
+#
+#
+#     omega_ref = np.sqrt(constants.gravitational_constant * stellar_mass*constants.solarm / (reference_radius*constants.au)**3)
+#     return(cs_ref/omega_ref)/(reference_radius*constants.au)
+
+def get_aspect_ratio_new(
+    T0: float,
+    q_index: float,
+    reference_radius: float,
+    stellar_mass: float,
+    gravitational_constant: float,
+) -> float:
+    R0_temp = 0.25
+    Tinf = 10
+    ref_radius = 10
+    my_temp_exp = 0.5
+    T_ref = np.sqrt(T0**2*(((reference_radius)**2+(R0_temp)**2)**-my_temp_exp)+Tinf**2) # KELVIN
+
+    cs_ref = np.sqrt((constants.k_b*T_ref)/(defaults._RUN_OPTIONS['mu']*constants.m_p))
+
+
+    omega_ref = np.sqrt(constants.gravitational_constant * stellar_mass*constants.solarm / (reference_radius*constants.au)**3)
+    return(cs_ref/omega_ref)/(reference_radius*constants.au)

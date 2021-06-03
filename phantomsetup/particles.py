@@ -21,6 +21,7 @@ class Particles:
         'particle_type',
         'position',
         'velocity',
+        'temperature', # I have added this 24/02/21
         'smoothing_length',
     ]
 
@@ -59,6 +60,7 @@ class Particles:
         particle_mass: float,
         position: ndarray,
         velocity: ndarray,
+        temperature: ndarray, # I have added this 24/02/21
         smoothing_length: ndarray,
         **kwargs,
     ) -> Particles:
@@ -92,6 +94,8 @@ class Particles:
             raise ValueError('velocity wrong shape, must be (N, 3)')
         if smoothing_length.ndim != 1:
             raise ValueError('smoothing_length wrong shape, must be (N,)')
+        if temperature.ndim != 1:                                       ## I have added this 24/02/21
+            raise ValueError('temperature wrong shape, must be (N,)')   ##
         if position.shape[1] != 3:
             raise ValueError('position wrong shape, must be (N, 3)')
         if velocity.shape[1] != 3:
@@ -118,13 +122,16 @@ class Particles:
             'particle_type',
             'position',
             'velocity',
+            'temperature', # I have added this 24/02/21
             'smoothing_length',
         ]
-        arrays = [_particle_type, position, velocity, smoothing_length]
+        arrays = [_particle_type, position, velocity,temperature, smoothing_length] # I have edited this 24/02/21
 
         for name, array in kwargs.items():
             names.append(name)
             arrays.append(array)
+
+
 
         for name, array in zip(names, arrays):
             if self.arrays[name] is not None:

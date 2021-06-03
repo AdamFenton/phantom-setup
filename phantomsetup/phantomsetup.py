@@ -85,6 +85,7 @@ class Setup:
         self._prefix = prefix
         self.set_run_option('logfile', f'{prefix}01.log')
         self.set_run_option('dumpfile', f'{prefix}_00000.tmp')
+        # self.set_run_option('dumpfile', f'{prefix}_00000') # I have changed this, see line above
 
     @property
     def number_of_particles(self) -> int:
@@ -540,6 +541,8 @@ class Setup:
                 pass
         return self
 
+
+
     def set_boundary(self, boundary: tuple, periodic: bool = False) -> Setup:
         """Set the boundary as a Cartesian box.
 
@@ -657,6 +660,7 @@ class Setup:
             self.set_run_option('tmax', tmax)
         if dtmax is not None:
             self.set_run_option('dtmax', dtmax)
+
         if ndumps is not None:
             dtmax = self.get_run_option('tmax') / ndumps
             self.set_run_option('dtmax', dtmax)
@@ -731,7 +735,7 @@ class Setup:
             raise ValueError('No prefix set')
         else:
             filename = f'{self.prefix}_00000.tmp.h5'
-
+            # filename = f'{self.prefix}_00000.h5' # I have changed this, see line above
         file_handle = h5py.File(directory / filename, 'w')
 
         self._write_header(file_handle)
@@ -887,6 +891,7 @@ class Setup:
         d = {
             'position': 'xyz',
             'velocity': 'vxyz',
+            'temperature': 'temp', # I have added this 24/01/21
             'smoothing_length': 'h',
             'particle_type': 'itype',
             'particle_mass': None,
@@ -1004,6 +1009,7 @@ class Setup:
 
         self._header['tolh'] = self.get_run_option('tolh')
         self._header['C_cour'] = self.get_run_option('C_cour')
+        self._header['tree_accuracy'] = self.get_run_option('tree_accuracy')
         self._header['C_force'] = self.get_run_option('C_force')
 
         # Artificial dissipation
@@ -1036,6 +1042,7 @@ class Setup:
             self._header['gamma'] = self._eos.gamma
         if self._eos.qfacdisc is not None:
             self._header['qfacdisc'] = self._eos.qfacdisc
+        self._header['isink'] = self.get_run_option('isink')
 
         # Boundary
 

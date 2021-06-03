@@ -27,3 +27,7 @@ solarr = 6.959500e10
 earthm = 5.979e27
 earthr = 6.371315e8
 jupiterm = 1.89813e30
+
+
+k_b = 1.38066E-16 # Boltzmann's constant
+m_p = 1.67262158E-24 # Mass of a proton
