@@ -1,0 +1,6 @@
+h5py
+numba
+numpy
+phantomconfig
+scipy
+tomlkit

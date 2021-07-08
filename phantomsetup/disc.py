@@ -1,6 +1,5 @@
 """Accretion disc."""
-# This is the change I have added, in
-#reality it would be much more exciting than a simple comment
+
 from __future__ import annotations
 
 import functools
@@ -208,11 +207,7 @@ class Disc(Particles):
         smoothing_length : ndarray
             The particle smoothing lengths.
         """
-        # TODO:
-        # - set particle mass from disc mass, or toomre q, or something else
-        # - add warps
-        # - support for external forces
-        # - add correction for self-gravity
+        # TODO: I will need to change the eay I calculate the self gravtitating scale height so it avoids using temperature directly. Instead using the aspect ratio.
 
         if (rotation_axis is not None) ^ (rotation_angle is not None):
             raise ValueError(
@@ -258,30 +253,24 @@ class Disc(Particles):
         phi = np.random.rand(size) * 2 * np.pi
         AU = constants.au
 
-        stellar_mass = 1
-        temperature = np.sqrt(T0**2*((((r*AU)**2+(R0_temp*AU)**2)/(AU**2))**-my_temp_exp)+Tinf**2) # KELVIN
+        stellar_mass = 1 # HARDCODED
 
+        temperature= np.sqrt(T0**2*((((r*AU)**2+(R0_temp*AU)**2)/(AU**2))**-my_temp_exp)+Tinf**2) # KELVIN
         cs = np.sqrt((constants.k_b*temperature)/(defaults._RUN_OPTIONS['mu']*constants.m_p)) # CM/S
-
-
         omega_mine = np.sqrt(constants.gravitational_constant * stellar_mass*constants.solarm / (r*constants.au)**3)
+        H = (cs/omega_mine)/AU
 
-        H = (cs/omega_mine)/AU# Scale height in AU
         random_num = np.random.uniform(0, 1, size)
-
 
         sigma = density_distribution(r, *extra_args) # THIS IS IN SOLAR MASS PER AU SQUARED
 
         Q_toomre =(cs * omega_mine)/(np.pi * constants.gravitational_constant * sigma * ((constants.solarm)/(constants.au**2)) ) # CGS units
-
         SGG_H = (np.sqrt(np.pi/8) * (cs/omega_mine) * (np.sqrt((1/(Q_toomre**2))+(8/np.pi)) - (1/Q_toomre))/AU)
 
-
         z = (np.sqrt(2) * SGG_H * special.erfinv((2*random_num)-1)) # THIS IS IN AU
-
         position = np.array([r * np.cos(phi), r * np.sin(phi), z]).T
-        rho_0 = (sigma/np.sqrt(2*np.pi)) * (1/(SGG_H)) # THIS IS IN SOLAR MASS PER AU CUBED
 
+        rho_0 = (sigma/np.sqrt(2*np.pi)) * (1/(SGG_H)) # THIS IS IN SOLAR MASS PER AU CUBED
         density = rho_0  * np.exp(-(((z)**2)/(2*((SGG_H)**2))))# THIS IS IN SOLAR MASS PER AU CUBED
 
         smoothing_length = hfact * (particle_mass / density) ** (1 / 3)
@@ -393,7 +382,6 @@ class Disc(Particles):
 
         r = np.random.choice(xi, size=size, p=p)
         AU = constants.au
-        temperature = np.sqrt(T0**2*((((r*AU)**2+(R0*AU)**2)/(AU**2))**-q_index)+Tinf**2)# KELVIN
 
         phi = np.random.rand(size) * 2 * np.pi
         H = (
