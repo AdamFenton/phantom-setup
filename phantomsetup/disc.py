@@ -253,7 +253,6 @@ class Disc(Particles):
         phi = np.random.rand(size) * 2 * np.pi
         AU = constants.au
 
-        stellar_mass = 1 # HARDCODED
 
         temperature= np.sqrt(T0**2*((((r*AU)**2+(R0_temp*AU)**2)/(AU**2))**-my_temp_exp)+Tinf**2) # KELVIN
         cs = np.sqrt((constants.k_b*temperature)/(defaults._RUN_OPTIONS['mu']*constants.m_p)) # CM/S
